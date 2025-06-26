@@ -117,6 +117,24 @@ export const rejectConnection=async (req,res)=>{
         connection.status="rejected"
         await connection.save()
 
+           // 🔥 Emit socket update to both users
+            const senderSocketId = userSocketMap.get(connection.sender.toString());
+            const receiverSocketId = userSocketMap.get(connection.receiver.toString());
+
+            if (senderSocketId) {
+            io.to(senderSocketId).emit("statusUpdate", {
+                updatedUserId: connection.receiver.toString(),
+                newStatus: "connect", // sender sees "Connect" after rejection
+            });
+            }
+
+            if (receiverSocketId) {
+            io.to(receiverSocketId).emit("statusUpdate", {
+                updatedUserId: connection.sender.toString(),
+                newStatus: "connect", // receiver also sees "Connect"
+            });
+            }
+
         return res.status(200).json({message:"connection rejected"})
 
 
