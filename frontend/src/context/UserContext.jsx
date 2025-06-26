@@ -6,6 +6,10 @@ import axios from 'axios'
 import { useState } from 'react'
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import {io} from "socket.io-client"
+
+
+export let socket=io("http://localhost:8000")
 
 export const userDataContext = createContext()
 
